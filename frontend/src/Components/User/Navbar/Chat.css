@@ -1,0 +1,22 @@
+#chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: black;
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 60px; /* centers the emoji or text vertically */
+  font-size: 24px;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: all 0.3s ease-in-out;
+  z-index: 999; /* ensures it stays above other elements */
+}
+
+#chat:hover {
+  background-color: rgba(61, 61, 163, 1);
+  transform: scale(1.1);
+}
