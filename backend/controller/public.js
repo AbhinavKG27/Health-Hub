@@ -17,12 +17,12 @@ const get_single_doctor=async(req,res)=>{
       const data=await doctor.findById(id)
       if(!data)
       {
-        return res.status(401).json({
+        return res.status(404).json({
           message:"cannot find doctor"
          
         })
       }
-      return  res.status(202).json({
+      return  res.status(200).json({
         message:"find doctor successfully",
         data:data
 

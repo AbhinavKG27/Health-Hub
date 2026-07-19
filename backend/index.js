@@ -9,10 +9,9 @@ const morgan = require('morgan');
 require("dotenv").config();
 const mongoose_connection = require("./db/connection");
 const patient_router = require("./router/patient");
-const doctor = require("./model/doctor");
+const { notFound, errorHandler } = require("./middleware/errorHandler");
 const app = express();
 app.use(cors({credentials: true, origin: true}));
-mongoose_connection(app);
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -21,8 +20,10 @@ app.use("/public",public_router);
 app.use(auth_router);
 app.use(admin_router);
 app.use(patient_router);
-app.use("/public",public_router)
 app.use(doctor_router);
+app.use(notFound);
+app.use(errorHandler);
+mongoose_connection(app);
 
 // {
 //     origin:"www.xyz.com",

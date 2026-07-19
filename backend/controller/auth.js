@@ -3,15 +3,14 @@ const jsonwebtoken = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 const doctor = require('../model/doctor');
 
-const { default: mongoose } = require('mongoose');
 
 const signin = async (req, res) => {
     try {
         const { username, password } = req.body;
-        if (!username | !password) {
-           return  res.status(202).json({ message: "incomplete content" });
+        if (!username || !password) {
+           return  res.status(400).json({ message: "incomplete content" });
         } else {
-            auth_user = await user.findOne({ username });
+            const auth_user = await user.findOne({ username });
             console.log(auth_user);
             console.log("hey....")
             if (!auth_user) {
@@ -47,10 +46,10 @@ const doctorsignin = async (req, res) => {
   try {
       const { email, password } = req.body;
       console.log(email,password)
-      if (!email | !password) {
-         return  res.status(202).json({ message: "incomplete content" });
+      if (!email || !password) {
+         return  res.status(400).json({ message: "incomplete content" });
       } else {
-          auth_user = await doctor.findOne({ email });
+          const auth_user = await doctor.findOne({ email });
           console.log(auth_user);
           if (!auth_user) {
                 return  res
@@ -86,12 +85,12 @@ const signup = async (req, res) => {
     try {
       const { username, password, email, gender, age, location, phone } =
         req.body;
-      if (!username | !password | !email) {
-        return res.status(204).json({ message: "incomplete content" });
+      if (!username || !password || !email) {
+        return res.status(400).json({ message: "incomplete content" });
       } else {
         const new_user = await user.findOne({ username, email });
         if (!new_user) {
-          hashed_password = await bcryptjs.hash(password, 8);
+          const hashed_password = await bcryptjs.hash(password, 8);
           await user.create({
             username,
             password: hashed_password,
@@ -101,7 +100,7 @@ const signup = async (req, res) => {
             location,
             phone,
           });
-          return res.status(200).json({ message: "user created" });
+          return res.status(201).json({ message: "user created" });
         } else {
           return res.status(409).json({ message: "user already exist" });
         }

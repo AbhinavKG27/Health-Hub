@@ -2,15 +2,12 @@ import React from "react";
 import { TextField, Button, Grid, Typography, Container } from "@mui/material";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { loginAsync } from "../slices/Loginslice";
 import { Form, Formik, Field, ErrorMessage } from "formik";
 import * as yup from "yup";
 import { Box } from "@mui/system";
 import axios from "axios";
 
 function LoginForm() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const initialValues = {
@@ -19,14 +16,12 @@ function LoginForm() {
   };
 
   const onSubmit = async (values) => {
-    // console.log(values);
     try {
         const response= await axios.post ("http://localhost:8080/doctorsignin",values)
-        console.log(response.data)
-        
         if(response.status===200){
             localStorage.setItem("jwt",response.data.token)
             localStorage.setItem("user",JSON.stringify(response.data.user))
+            localStorage.setItem("is_admin","false")
             localStorage.setItem("is_doctor",response.data.user.is_doctor)
             if(response.data.user.is_doctor===true){
                 toast.success("login successfully")
@@ -43,7 +38,7 @@ function LoginForm() {
 
     }
     catch(error){
-        console.log(error.message)
+        toast.error(error.response?.data?.message || "login failed")
     }   
 
     

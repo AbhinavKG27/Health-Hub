@@ -4,7 +4,6 @@ const user = require("../model/user");
 const pquery = require("../model/patientmessage");
 const ambulance=require("../model/Ambulance")
 
-const axios = require("axios");
 const bcryptjs = require("bcryptjs");
 
 const user_query = async (req, res) => {
@@ -32,7 +31,7 @@ const single_appointments = async (req, res) => {
 
       if (!appointment) {
           return res
-              .status(401)
+              .status(404)
               .json({ message: "no appointments found" });
       } else {
           return res.json({ appointment });
@@ -50,13 +49,13 @@ const all_appointments = async (req, res) => {
   try {
     const id = req.id;
     if (!id) {
-      return res.status(202).json({ message: "incomplete content" });
+      return res.status(400).json({ message: "incomplete content" });
     } else {
       const user_appointments = await appointments
         .find({ user: id })
         .populate("doctor");
       if (!user_appointments) {
-        return res.status(401).json({ message: "no appointments found" });
+        return res.status(404).json({ message: "no appointments found" });
       } else {
         return res.json({ user_appointments });
       }
@@ -68,12 +67,12 @@ const all_appointments = async (req, res) => {
 
 const create_appointments = async (req, res) => {
   try {
-    const { doctor, disease, date, status } = req.body;
+    const { doctor, disease, date } = req.body;
 
     const user = req.id;
 
-    if (!user | !doctor | !disease | !date) {
-      return res.status(202).json({ message: "incomplete content" });
+    if (!user || !doctor || !disease || !date) {
+      return res.status(400).json({ message: "incomplete content" });
     } else {
       const user_appointments = await appointments.create({
         user,
@@ -82,7 +81,7 @@ const create_appointments = async (req, res) => {
         date,
       });
       if (user_appointments) {
-        return res.status(200).json({ message: "appointments created" });
+        return res.status(201).json({ message: "appointments created" });
       } else {
         return res.status(400).json({ message: "error creating appointments" });
       }
@@ -97,7 +96,7 @@ const payment = async (req, res) => {
   
   console.log(_id, status);
   try {
-    if (!_id | !status) {
+    if (!_id || !status) {
       return res.status(400).json({ message: "Invalid payment request" });
     }
     await appointments.findByIdAndUpdate(
@@ -119,7 +118,7 @@ const ambulance_booking= async (req,res)=>{
 
   try {
     
-    if(!name | !phoneNumber | !address | !emergencyType| !city | !state | !zip){
+    if(!name || !phoneNumber || !address || !emergencyType || !city || !state || !zip){
       return res.status(400).json({message:"invalid request"})
     }
   
@@ -132,7 +131,7 @@ const ambulance_booking= async (req,res)=>{
 
 
   } catch (error) {
-    return res.status(502).json({message:"internal problem"})
+    return res.status(500).json({message:"internal problem"})
 
     
   }
@@ -148,13 +147,13 @@ const single_user=async(req,res)=>{
       const data=await user.findById(id)
       if(!data)
       {
-        return res.status(401).json({
+        return res.status(404).json({
           message:"cannot find user"
          
         })
       }
 
-      return  res.status(202).json({
+      return  res.status(200).json({
         message:"find user successfully",
         data:data
 
@@ -185,7 +184,7 @@ const update_user=async(req,res)=>{
 
 
   try{
-    if(!username | !email  | ! phone | !gender | !age | !location){
+    if(!username || !email || !phone || !gender || !age || !location){
       return res.status(400).json({message:"invalid request"})
     }
 
@@ -196,7 +195,7 @@ const update_user=async(req,res)=>{
    
     if(!data)
     {
-      return res.status(401).json({
+      return res.status(404).json({
         message:"cannot find user"
        
       })
@@ -210,7 +209,7 @@ const update_user=async(req,res)=>{
       
     
 
-    return res.status(202).json({
+    return res.status(200).json({
       message:"update successfully",
       data:updateduser
     })

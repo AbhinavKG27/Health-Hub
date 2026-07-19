@@ -20,6 +20,7 @@ export const loginAsync = createAsyncThunk(
         const expirationTime = new Date().getTime() + TOKEN_EXPIRATION_TIME;
         localStorage.setItem("jwt", response.data.token);
         localStorage.setItem("is_admin", response.data.user.is_admin);
+        localStorage.setItem("is_doctor", "false");
         localStorage.setItem("jwtExpiration", expirationTime);
         localStorage.setItem("user",response.data.user.username)
       }
@@ -77,11 +78,11 @@ if (isTokenExpired()) {
   localStorage.removeItem("jwt");
   localStorage.removeItem("jwtExpiration");
   localStorage.removeItem("is_admin");
+  localStorage.removeItem("is_doctor");
 }
 
 
 // Export the async thunk action and the login slice reducer
 export default loginSlice.reducer
 export const  {logout}=loginSlice.actions
-
 

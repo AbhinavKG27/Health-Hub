@@ -1,6 +1,5 @@
 
 const doctor = require("../model/doctor");
-const mongoose = require("mongoose");
 const appointments = require("../model/appointments");
 const pquery = require("../model/patientmessage");
 const ambulance = require("../model/Ambulance")
@@ -9,8 +8,8 @@ const add_doctor = async (req, res) => {
     try {
         const { name, expertise, image,date,email,password,desc,contact,ammount} = req.body;
         console.log(name, expertise, image,date,email,password,desc,contact,ammount);
-        if (!name | !image | !expertise | !date | !email | !password | !desc | !contact | !ammount) {
-            return res.status(204).json({ message: "incomplete content" });
+        if (!name || !image || !expertise || !date || !email || !password || !desc || !contact || !ammount) {
+            return res.status(400).json({ message: "incomplete content" });
         } else {
             const db_doctor = await doctor.findOne({ name,email });
             if (!db_doctor) {
@@ -31,7 +30,7 @@ const delete_doctor = async (req, res) => {
         const _id = req.params.id;
 
         if (!_id) {
-            return res.status(204).json({ message: "no id sent" });
+            return res.status(400).json({ message: "no id sent" });
         } else {
             const db_doctor = await doctor.findOne({ _id });
             if (db_doctor) {
@@ -71,12 +70,12 @@ const ambulance_service = async (req, res) => {
 const update_appointment = async (req, res) => {
     try {
         const { _id, status, invoice } = req.body;
-        if (!_id | !status | !invoice) {
-            return res.status(202).json({ message: "incomplete-content" });
+        if (!_id || !status || !invoice) {
+            return res.status(400).json({ message: "incomplete-content" });
         } else {
             const appointment = await appointments.findOne({ _id });
             if (!appointment) {
-                return res.status(401).json({ message: "no appointment exist" });
+                return res.status(404).json({ message: "no appointment exist" });
             } else {
                 await appointments.findByIdAndUpdate({ _id }, { status, invoice });
                 return res.status(200).json({ message: "appointment updated" });
@@ -100,7 +99,7 @@ const all_appointments = async (req, res) => {
         console.log(all_appointments)
         if (!all_appointments) {
             return res
-                .status(401)
+                .status(404)
                 .json({ message: "no appointments found" });
         } else {
             return res.json({ all_appointments });
@@ -126,7 +125,7 @@ const single_appointments = async (req, res) => {
 
         if (!appointment) {
             return res
-                .status(401)
+                .status(404)
                 .json({ message: "no appointments found" });
         } else {
             return res.json({ appointment });

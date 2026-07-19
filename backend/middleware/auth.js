@@ -2,25 +2,27 @@ const jwt = require("jsonwebtoken");
 
 const auth_middleware = async (req, res, next) => {
   try {
-    const token = req.headers["authorization"];
-   
-    
+    const token = req.headers.authorization;
+
+    if (!token || !token.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "authorization token missing" });
+    }
 
     const bearer = token.split(" ");
     const verify = jwt.verify(bearer[1], process.env.SECRET_KEY);
-    console.log(verify)
-    
-    if (verify) {
-      req.id = verify.auth_user._id;
-      console.log(req.id)
-      // req.is_admin = verify.auth_user.is_admin;
-      next();
-      return;
-    } else {
+
+    if (!verify || !verify.auth_user) {
       return res.status(401).json({ message: "un-authorized" });
     }
+
+    req.id = verify.auth_user._id;
+    req.is_admin = Boolean(verify.auth_user.is_admin);
+    req.is_doctor = Boolean(verify.auth_user.is_doctor);
+    req.auth_user = verify.auth_user;
+
+    next();
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    return res.status(401).json({ message: "invalid or expired token" });
   }
 };
 

@@ -1,7 +1,7 @@
-const role_check = async(req, res, next)=>{
-    admin_role = req.is_admin;
-    if(admin_role == false ){
-        return res.status(401).json({message: "un-authorized"});
+const role_check = async (req, res, next) => {
+    const admin_role = req.is_admin;
+    if (admin_role !== true) {
+        return res.status(403).json({message: "forbidden"});
     }
     next();
     return;

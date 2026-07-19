@@ -21,7 +21,7 @@ const appintments_schema = mongoose.Schema({
     },
     invoice: {
         type: String,
-        require: true,
+        required: true,
     },
     disease: {
         type: String,

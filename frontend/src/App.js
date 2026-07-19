@@ -13,10 +13,10 @@ import Services from "./Components/User/pages/Services";
 import About from "./Components/User/pages/About/About";
 import Doctor from "./Components/User/pages/Doctor/Doctor";
 import PrivateRoutes from "./Privateroutes";
+import DoctorPrivateRoute from "./DoctorprivateRoute";
 import Form from "./Components/User/pages/Doctor/Form";
 import Doctorlogin from "./Components/User/Login/Doctorlogin";
 
-import { useState} from "react";
 import Dashboard from "./Components/Admin/Dashboard";
 import PagenotFound from "./Components/User/pages/PagenotFound";
 import Appointment from "./Components/User/pages/Doctor/Appointment";
@@ -27,14 +27,9 @@ import UserProfile from "./Components/User/pages/userProfile";
 import AmbulanceBooking from "./Components/User/pages/Ambulance";
 
 function App() {
-  const [is_admin, setIsAdmin] = useState(localStorage.getItem("is_admin"));
-  const [is_doctor,setIsdoctor]=useState(localStorage.getItem("is_doctor"))
-
-  console.log(is_doctor)
-
-
-
-
+  const token = localStorage.getItem("jwt");
+  const is_admin = token && localStorage.getItem("is_admin") === "true";
+  const is_doctor = token && localStorage.getItem("is_doctor") === "true";
 
   return (
       
@@ -43,9 +38,11 @@ function App() {
     <Grid container >
        {is_doctor ? (
         <Grid item xs={12}>
-         <DDashboard />
+         <DoctorPrivateRoute>
+          <DDashboard />
+         </DoctorPrivateRoute>
         </Grid>
-      ):is_admin === 'true' ? (
+      ):is_admin ? (
         <Grid item xs={12}>
           <Dashboard />
         </Grid>
