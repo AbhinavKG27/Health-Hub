@@ -22,7 +22,11 @@ const auth_middleware = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: "invalid or expired token" });
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "authorization token expired" });
+    }
+
+    return res.status(401).json({ message: "invalid authorization token" });
   }
 };
 

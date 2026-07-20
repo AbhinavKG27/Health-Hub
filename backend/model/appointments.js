@@ -44,6 +44,9 @@ const appintments_schema = mongoose.Schema({
 
 });
 
+appintments_schema.index({ user: 1, date: -1 });
+appintments_schema.index({ doctor: 1, date: -1 });
+appintments_schema.index({ status: 1 });
 
 const appointments = mongoose.model("appointments", appintments_schema);
 module.exports = appointments;

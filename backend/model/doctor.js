@@ -4,6 +4,7 @@ const doctor_schema = mongoose.Schema({
         type:String, 
         default:"Dr. Ram Swami ayer",
         required:true,
+        trim:true,
     },
     expertise:{
         type:[String],
@@ -16,19 +17,26 @@ const doctor_schema = mongoose.Schema({
     },
     email:{
         type:String,
-        required:true
+        required:true,
+        unique:true,
+        trim:true,
+        lowercase:true,
+        match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please provide a valid email"],
     },
     password:{
         type:String,
-        required:true
+        required:true,
+        select:false,
     },
     contact:{
         type:String,
-        required:true
+        required:true,
+        trim:true,
     },
     desc:{
         type:String,
-        required:true
+        required:true,
+        trim:true,
     },
     date:{
         type:[String],
@@ -36,7 +44,8 @@ const doctor_schema = mongoose.Schema({
     },
     ammount:{
         type:Number,
-        required:true
+        required:true,
+        min:0,
 
     },
     is_doctor:{
@@ -52,5 +61,4 @@ const doctor_schema = mongoose.Schema({
 
 const doctor = mongoose.model("doctor",doctor_schema);
 module.exports = doctor;
-
 

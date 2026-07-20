@@ -2,7 +2,19 @@ const user = require('../model/user');
 const jsonwebtoken = require('jsonwebtoken');
 const bcryptjs = require('bcryptjs');
 const doctor = require('../model/doctor');
+const { jwtExpiresIn, cookieOptions } = require('../config');
 
+const sanitizeAuthUser = (auth_user) => {
+  const userObject = auth_user.toObject ? auth_user.toObject() : { ...auth_user };
+  delete userObject.password;
+  delete userObject.__v;
+  return userObject;
+};
+
+const createToken = (auth_user) => {
+  const tokenUser = sanitizeAuthUser(auth_user);
+  return jsonwebtoken.sign({ auth_user: tokenUser }, process.env.SECRET_KEY, { expiresIn: jwtExpiresIn() });
+};
 
 const signin = async (req, res) => {
     try {
@@ -10,9 +22,7 @@ const signin = async (req, res) => {
         if (!username || !password) {
            return  res.status(400).json({ message: "incomplete content" });
         } else {
-            const auth_user = await user.findOne({ username });
-            console.log(auth_user);
-            console.log("hey....")
+            const auth_user = await user.findOne({ username }).select("+password");
             if (!auth_user) {
                   return  res
                     .status(401)
@@ -24,9 +34,10 @@ const signin = async (req, res) => {
             .status(401)
             .json({ message: "username or password incorrect" });
                 }else{
-                    const token = jsonwebtoken.sign({auth_user},process.env.SECRET_KEY,{expiresIn:"5h"} );
-                    res.cookie("authorization", `Bearer ${token}`);
-                    return res.status(200).json({ token:`Bearer ${token}`, user:auth_user,message:"login successfully"});
+                    const token = createToken(auth_user);
+                    const safeUser = sanitizeAuthUser(auth_user);
+                    res.cookie("authorization", `Bearer ${token}`, cookieOptions());
+                    return res.status(200).json({ token:`Bearer ${token}`, user:safeUser,message:"login successfully"});
                 }
 
             }
@@ -45,12 +56,10 @@ const signin = async (req, res) => {
 const doctorsignin = async (req, res) => {
   try {
       const { email, password } = req.body;
-      console.log(email,password)
       if (!email || !password) {
          return  res.status(400).json({ message: "incomplete content" });
       } else {
-          const auth_user = await doctor.findOne({ email });
-          console.log(auth_user);
+          const auth_user = await doctor.findOne({ email }).select("+password");
           if (!auth_user) {
                 return  res
                   .status(401)
@@ -62,9 +71,10 @@ const doctorsignin = async (req, res) => {
           .status(401)
           .json({ message: "email or password incorrect" });
               }else{
-                  const token = jsonwebtoken.sign({auth_user},process.env.SECRET_KEY,{expiresIn:"5h"} );
-                  res.cookie("authorization", `Bearer ${token}`);
-                  return res.status(200).json({ token:`Bearer ${token}`, user:auth_user});
+                  const token = createToken(auth_user);
+                  const safeUser = sanitizeAuthUser(auth_user);
+                  res.cookie("authorization", `Bearer ${token}`, cookieOptions());
+                  return res.status(200).json({ token:`Bearer ${token}`, user:safeUser});
               }
 
           }
@@ -88,7 +98,7 @@ const signup = async (req, res) => {
       if (!username || !password || !email) {
         return res.status(400).json({ message: "incomplete content" });
       } else {
-        const new_user = await user.findOne({ username, email });
+        const new_user = await user.findOne({ $or: [{ username }, { email }] });
         if (!new_user) {
           const hashed_password = await bcryptjs.hash(password, 8);
           await user.create({

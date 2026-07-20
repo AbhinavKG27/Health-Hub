@@ -10,8 +10,15 @@ require("dotenv").config();
 const mongoose_connection = require("./db/connection");
 const patient_router = require("./router/patient");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
+const { securityHeaders } = require("./middleware/security");
+const { validateEnv, corsOptions } = require("./config");
+
+validateEnv();
+
 const app = express();
-app.use(cors({credentials: true, origin: true}));
+app.disable("x-powered-by");
+app.use(securityHeaders);
+app.use(cors(corsOptions()));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
