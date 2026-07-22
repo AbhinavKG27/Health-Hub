@@ -95,10 +95,14 @@ const Homepage = () => {
             </Typography>
            
             <Avatar
-  alt="Remy Sharp"
-  src="/static/images/avatar/1.jpg"
-  sx={{ width: 56, height: 56 }}
-/>
+    sx={{
+        bgcolor: "#1976d2",
+        width: 56,
+        height: 56,
+    }}
+>
+    D
+</Avatar>
             </Box>
             </Grid>
           </Grid>
