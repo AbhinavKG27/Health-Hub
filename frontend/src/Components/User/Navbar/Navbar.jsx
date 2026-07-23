@@ -1,5 +1,4 @@
-import { React, useState } from "react";
-import './Chat.css'
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -16,220 +15,190 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  Drawer,
+  Divider
 } from "@mui/material";
-import Drawor from "./Drawor";
-import { Link, NavLink } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { logout } from "../slices/Loginslice";
 import logo from "../assets/logo.png";
+
+const navItems = [
+  { label: "Home", to: "/" },
+  { label: "About", to: "/about" },
+  { label: "Services", to: "/services" },
+  { label: "Doctors", to: "/doctor" },
+  { label: "Contact", to: "/contact" },
+  { label: "Ambulance", to: "/ambulance-booking" }
+];
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const data = useSelector((state) => state.login);
-  console.log(data);
-
   const theme = useTheme();
-
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const open = Boolean(anchorEl);
   const item = localStorage.getItem("jwt");
   const is_admin = localStorage.getItem("is_admin");
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   const handlelog = () => {
     dispatch(logout());
     navigate("/");
   };
 
-  return (
+  const NavLinks = () => (
     <>
-      <AppBar sx={{ background: "#f3f7eb", position: "sticky" ,top:"0px" }}>
-        <Toolbar sx={{ justifyContent: "space-between" ,border:"none" }}>
-          <IconButton
-            size="large"
-            aria-label="account of current user"
-            aria-controls="menu-appbar"
-            aria-haspopup="true"
-            color="primary"
-            component={Link}
-            to="/"
-          >
-            <img
-              style={{
-                borderRadius: "60%",
-                width: 80,
-                height: 70,
-              }}
-              src={logo}
-              alt="logo"
-            />
-          </IconButton>
+      {navItems.map((item) => (
+        <Button
+          key={item.to}
+          component={Link}
+          to={item.to}
+          sx={{
+            color: "#102033",
+            fontWeight: 600,
+            px: 1.6,
+            borderRadius: 999,
+            textTransform: "none"
+          }}
+        >
+          {item.label}
+        </Button>
+      ))}
+    </>
+  );
 
-          {isMatch ? (
-            <Drawor />
-          ) : (
-            <>
-              <List
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "10px",
-                  color: "black",
-                }}
-              >
-                <ListItem>
-                  <ListItemButton
-                    component={Link}
-                    to="/"
-                    sx={{ textAlign: "center" }}
-                  >
-                    <ListItemText primary="Home" />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton
-                    component={Link}
-                    to="/contact"
-                    sx={{ textAlign: "center" }}
-                  >
-                    <ListItemText primary="Contact " />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton
-                    component={Link}
-                    to="/about"
-                    sx={{ textAlign: "center" }}
-                  >
-                    <ListItemText primary="About " />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton
-                    component={Link}
-                    to="/doctor"
-                    sx={{ textAlign: "center" }}
-                  >
-                    <ListItemText primary="Doctors" />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem>
-                  <ListItemButton
-                    component={Link}
-                    to="/services"
-                    sx={{ textAlign: "center" }}
-                  >
-                    <ListItemText primary="Services" />
-                  </ListItemButton>
-                </ListItem>
+  return (
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        background: "rgba(255,255,255,0.72)",
+        backdropFilter: "blur(18px)",
+        borderBottom: "1px solid rgba(16,32,51,0.08)"
+      }}
+    >
+      <Toolbar sx={{ justifyContent: "space-between", gap: 2 }}>
+        <Box
+          component={Link}
+          to="/"
+          sx={{ display: "flex", alignItems: "center", gap: 1.2 }}
+        >
+          <Box
+            component="img"
+            src={logo}
+            alt="Health Hub"
+            sx={{ width: 52, height: 52, borderRadius: "50%" }}
+          />
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ fontWeight: 800, color: "#102033", lineHeight: 1 }}>
+              Health Hub
+            </Box>
+            <Box sx={{ fontSize: 12, color: "#5b6b7f" }}>
+              Modern healthcare
+            </Box>
+          </Box>
+        </Box>
 
-                <ListItem>
-                  <ListItemButton
-                    component={Link}
-                    to="/ambulance-booking"
-                    sx={{ textAlign: "center" }}
-                  >
-                    <ListItemText primary="Ambulance" />
-                  </ListItemButton>
-                </ListItem>
+        {isMatch ? (
+          <>
+            <IconButton onClick={() => setDrawerOpen(true)} sx={{ color: "#102033" }}>
+              <MenuIcon />
+            </IconButton>
 
-
-              </List>
-
-              <Box sx={{ marginLeft: "auto" }}>
-                {item && is_admin === "false" ? (
+            <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+              <Box sx={{ width: 280, p: 2 }}>
+                <Box sx={{ fontWeight: 800, mb: 2 }}>Health Hub</Box>
+                <List>
+                  {navItems.map((item) => (
+                    <ListItem key={item.to} disablePadding>
+                      <ListItemButton component={Link} to={item.to} onClick={() => setDrawerOpen(false)}>
+                        <ListItemText primary={item.label} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+                <Divider sx={{ my: 1.5 }} />
+                {!item ? (
                   <>
-                   <a href="http://192.168.40.43:5500/healthhub-bot.html" id="chat" >  💬 </a>
-                    <Tooltip title={localStorage.getItem("user")}>
-                      <Button
-                        id="basic-button"
-                        aria-controls={open ? "basic-menu" : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? "true" : undefined}
-                        onClick={handleClick}
-                      >
-                        <Avatar />
-                      </Button>
-                    </Tooltip>
-
-                    <Menu
-                      id="basic-menu"
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                      MenuListProps={{
-                        "aria-labelledby": "basic-button",
-                      }}
-                    >
-                      <MenuItem as={NavLink} to="/appointment">
-                        Appointment
-                      </MenuItem>
-                      <MenuItem as={NavLink} to="/userprofile">profile</MenuItem>
-                      <MenuItem onClick={handlelog}>Logout</MenuItem>
-                     
-                    </Menu>
+                    <ListItem disablePadding>
+                      <ListItemButton component={NavLink} to="/login" onClick={() => setDrawerOpen(false)}>
+                        <ListItemText primary="User Login" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton component={NavLink} to="/doctorlogin" onClick={() => setDrawerOpen(false)}>
+                        <ListItemText primary="Doctor Login" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton component={Link} to="/SignUp" onClick={() => setDrawerOpen(false)}>
+                        <ListItemText primary="Sign Up" />
+                      </ListItemButton>
+                    </ListItem>
                   </>
                 ) : (
-                  <Box sx={{
-                    display:"flex",
-                    flexDirection:"row",
-                    gap:"10px",
-                    justifyContent:"space-between",
-                    alignContent:"center"
-                  }}>
-
-                   <div>
-      <Button
-        id="basic-button"
-        aria-controls={open ? 'basic-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
-      >
-       login
-      </Button>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <MenuItem as={NavLink} to="/login" onClick={handleClose}>login as user</MenuItem>
-        <MenuItem  as={NavLink} to="/doctorlogin" onClick={handleClose}>login as doctor</MenuItem>
-       
-      </Menu>
-    </div>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      sx={{ marginLeft: "20px" }}
-                      component={Link}
-                      to="/SignUp"
-                    >
-                      Sign Up
-                    </Button>
-                  </Box>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => { handlelog(); setDrawerOpen(false); }}>
+                      <ListItemText primary="Logout" />
+                    </ListItemButton>
+                  </ListItem>
                 )}
               </Box>
-            </>
-          )}
-        </Toolbar>
-      </AppBar>
-    </>
+            </Drawer>
+          </>
+        ) : (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
+            <NavLinks />
+
+            {item && is_admin === "false" ? (
+              <>
+                <Tooltip title={localStorage.getItem("user") || "Account"}>
+                  <IconButton onClick={handleClick} sx={{ ml: 1 }}>
+                    <Avatar sx={{ width: 38, height: 38 }} />
+                  </IconButton>
+                </Tooltip>
+
+                <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                  <MenuItem component={NavLink} to="/appointment" onClick={handleClose}>
+                    Appointment
+                  </MenuItem>
+                  <MenuItem component={NavLink} to="/userprofile" onClick={handleClose}>
+                    Profile
+                  </MenuItem>
+                  <MenuItem onClick={handlelog}>Logout</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outlined"
+                  component={NavLink}
+                  to="/login"
+                  sx={{ borderRadius: 999, textTransform: "none", fontWeight: 700 }}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="contained"
+                  component={Link}
+                  to="/SignUp"
+                  sx={{ borderRadius: 999, textTransform: "none", fontWeight: 700 }}
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
+          </Box>
+        )}
+      </Toolbar>
+    </AppBar>
   );
 };
 

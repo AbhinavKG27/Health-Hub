@@ -1,9 +1,8 @@
-import { Grid, Box} from "@mui/material";
+import { Box } from "@mui/material";
 import Navbar from "./Components/User/Navbar/Navbar";
 import { Routes, Route } from "react-router-dom";
 import Footer from "./Components/User/Footer/Footer";
 import Report from "./Components/User/pages/Report";
-
 import "./App.css";
 import LoginForm from "./Components/User/Login/Login";
 import SignUpForm from "./Components/User/Login/Signin";
@@ -16,14 +15,12 @@ import PrivateRoutes from "./Privateroutes";
 import DoctorPrivateRoute from "./DoctorprivateRoute";
 import Form from "./Components/User/pages/Doctor/Form";
 import Doctorlogin from "./Components/User/Login/Doctorlogin";
-
 import Dashboard from "./Components/Admin/Dashboard";
 import PagenotFound from "./Components/User/pages/PagenotFound";
 import Appointment from "./Components/User/pages/Doctor/Appointment";
 import Room from "./Components/User/pages/Doctor/Room";
 import DDashboard from "./Components/Doctor/Dashboard";
 import UserProfile from "./Components/User/pages/userProfile";
-
 import AmbulanceBooking from "./Components/User/pages/Ambulance";
 
 function App() {
@@ -32,64 +29,44 @@ function App() {
   const is_doctor = token && localStorage.getItem("is_doctor") === "true";
 
   return (
-      
-
-
-    <Grid container >
-       {is_doctor ? (
-        <Grid item xs={12}>
-         <DoctorPrivateRoute>
+    <Box className="app-shell">
+      {is_doctor ? (
+        <DoctorPrivateRoute>
           <DDashboard />
-         </DoctorPrivateRoute>
-        </Grid>
-      ):is_admin ? (
-        <Grid item xs={12}>
-          <Dashboard />
-        </Grid>
+        </DoctorPrivateRoute>
+      ) : is_admin ? (
+        <Dashboard />
       ) : (
         <>
-          <Grid item xs={12} >
-            <Navbar sx={{ backgroundColor:"#acb2bd"}} />
-          </Grid>
-          <Grid item xs={12} sx={{ minHeight: '80vh' , backgroundColor:"#dcfcec",  }}>
-          <Box>
-              <Routes>
-                <Route path="/" Component={Screen} />
-              <Route path="/contact" Component={Contact} />
-               <Route path="/SignUp" Component={SignUpForm} />
-                <Route path="/services" Component={Services} />
-            <Route path="/about" Component={About} />
-                <Route path="/doctor" Component={Doctor} />
+          <Navbar />
+          <Box className="app-content">
+            <Routes>
+              <Route path="/" element={<Screen />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/SignUp" element={<SignUpForm />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/doctor" element={<Doctor />} />
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/doctorlogin" element={<Doctorlogin />} />
 
+              <Route element={<PrivateRoutes />}>
+                <Route path="/form/:id" element={<Form />} />
+                <Route path="/appointment" element={<Appointment />} />
+                <Route path="/room/:roomID" element={<Room />} />
+                <Route path="/ambulance-booking" element={<AmbulanceBooking />} />
+                <Route path="/report/:id" element={<Report />} />
+                <Route path="/userprofile" element={<UserProfile />} />
+              </Route>
 
-                <Route path="/login" Component={LoginForm} />
-                <Route path="/doctorlogin" Component={Doctorlogin} />
- 
-{/* scope of private routes */}
-                <Route Component={PrivateRoutes}>
-              <Route path="/form/:id" Component={Form} />
-                 <Route path="/appointment" Component={Appointment} />
-                 <Route path="/room/:roomID" Component={Room} />
-                 <Route path="/ambulance-booking" Component={AmbulanceBooking} />
-                 <Route path="/report/:id" Component={Report} />
-                  <Route path="/userprofile" Component={UserProfile} />
-                </Route>
-{/* scope of private routes */}
-                
-                <Route path="*" Component={PagenotFound} />
-               </Routes>
-           </Box>
-          </Grid>
-          <Grid item xs={12} sx={{height:'10vh'}}>
-            <Footer />
-          </Grid>
+              <Route path="*" element={<PagenotFound />} />
+            </Routes>
+          </Box>
+          <Footer />
         </>
       )}
-    </Grid>
+    </Box>
   );
-};
-
-
-
+}
 
 export default App;
